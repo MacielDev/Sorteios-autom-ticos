@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { RecoilRoot } from "recoil";
 import { useListaDeParticipantes } from "../../state/hooks/useListaDeParticipantes";
+
 import Rodape from "./";
 
 //Mock da lista de participantes
@@ -12,7 +13,9 @@ jest.mock("../../state/hooks/useListaDeParticipantes", () => {
   };
 });
 
-const mockDeNavegacao = jest.fn();
+const mockDeNavegacao = jest.fn()
+const mockSorteio = jest.fn()
+
 
 //Mock da rota/useNavigate
 jest.mock("react-router-dom", () => {
@@ -20,6 +23,13 @@ jest.mock("react-router-dom", () => {
     useNavigate: () => mockDeNavegacao,
   };
 });
+
+//Mock do useSorteador
+jest.mock("../../state/hooks/useSorteador",() => {
+  return {
+    useSorteador: () =>  mockSorteio
+  }
+})
 
 describe("Não existem participantes suficientes para o sorteio", () => {
   const participantes: string[] = [];
@@ -62,6 +72,7 @@ describe("quando participantes for >= 3", () => {
     fireEvent.click(botao);
     expect(mockDeNavegacao).toHaveBeenCalledTimes(1)// Verifica quantas vezes esperamos que o "navigate" seja chamado
     expect(mockDeNavegacao).toHaveBeenCalledWith('/sorteio') //Verifica se a rota ascessada foi a esperada
+    expect(mockSorteio).toHaveBeenCalledTimes(1)
 
   });
 });
